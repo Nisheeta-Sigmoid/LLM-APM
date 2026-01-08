@@ -4,55 +4,34 @@ on:
   push:
     branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
-  ci:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # ---------------- BACKEND ----------------
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
 
-      - name: Install backend dependencies
+      - name: Verify Docker
+        run: docker --version
+
+      - name: Build services
         run: |
-          pip install -r backend/requirements.txt
+          docker compose -f docker/docker-compose.yml build
 
-      - name: Backend import & metrics sanity
+      - name: Start services
         run: |
-          python - <<EOF
-          from app.main import app
-          from llm_apm import metrics
-          print("✅ Backend & metrics loaded")
-          EOF
+          docker compose -f docker/docker-compose.yml up -d
 
-      # ---------------- FRONTEND ----------------
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+      - name: List running containers
+        run: docker ps
 
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm install
-
-      - name: Frontend build
-        working-directory: frontend
-        run: npm run build
-
-      # ---------------- DOCKER ----------------
-      - name: Docker build backend
-        run: docker build -f docker/Dockerfile.app -t llm-apm-backend .
-
-      - name: Docker build frontend
-        run: docker build -f docker/Dockerfile.frontend -t llm-apm-frontend ./frontend
-
-      # ---------------- COMPOSE ----------------
-      - name: Validate docker-compose
-        working-directory: docker
-        run: docker compose config
+      - name: Smoke test backend
+        run: |
+          sleep 10
+          curl -f http://localhost:4000/metrics
