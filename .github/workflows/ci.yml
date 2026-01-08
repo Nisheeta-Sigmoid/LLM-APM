@@ -1,0 +1,58 @@
+name: LLM-APM CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ---------------- BACKEND ----------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name: Backend import & metrics sanity
+        run: |
+          python - <<EOF
+          from app.main import app
+          from llm_apm import metrics
+          print("✅ Backend & metrics loaded")
+          EOF
+
+      # ---------------- FRONTEND ----------------
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Frontend build
+        working-directory: frontend
+        run: npm run build
+
+      # ---------------- DOCKER ----------------
+      - name: Docker build backend
+        run: docker build -f docker/Dockerfile.app -t llm-apm-backend .
+
+      - name: Docker build frontend
+        run: docker build -f docker/Dockerfile.frontend -t llm-apm-frontend ./frontend
+
+      # ---------------- COMPOSE ----------------
+      - name: Validate docker-compose
+        working-directory: docker
+        run: docker compose config
