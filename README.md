@@ -1,126 +1,110 @@
-🚀 LLM-APM
-Real-Time Observability for LLM-Powered Applications
+# 🚀 LLM-APM
 
-Chatbot • Step-wise Latency • Token & Cost Tracking • Prometheus • Grafana
+**Real-Time Observability for LLM-Powered Applications**
 
-🧠 Overview
+*Chatbot • Step-wise Latency • Token & Cost Tracking • Prometheus • Grafana*
 
-LLM-APM is an end-to-end Application Performance Monitoring (APM) platform specifically designed for LLM applications.
+---
 
-This project goes beyond a basic /generate API and implements:
+## 🧠 Overview
 
-💬 A ChatGPT-style chatbot
+**LLM-APM** is an end-to-end Application Performance Monitoring (APM) platform specifically designed for LLM applications.
 
-📊 A custom frontend performance dashboard
+This project goes beyond a basic `/generate` API and implements:
 
-🧩 A plug-and-play Python APM library (llm_apm)
+- 💬 A **ChatGPT-style chatbot**
+- 📊 A **custom frontend performance dashboard**
+- 🧩 A **plug-and-play Python APM library** (`llm_apm`)
+- 📈 **Prometheus + Grafana** observability stack
+- 🧠 **Step-wise latency tracking** via middleware & decorators
 
-📈 Prometheus + Grafana observability stack
+**The goal:** Make LLM systems observable, debuggable, and cost-aware.
 
-🧠 Step-wise latency tracking via middleware & decorators
+---
 
-The goal is to make LLM systems observable, debuggable, and cost-aware.
-
-🎯 Problem Statement
+## 🎯 Problem Statement
 
 LLM applications are:
 
-Latency-sensitive ⏱️
-
-Costly 💸
-
-Operationally opaque 🕳️
+- **Latency-sensitive** ⏱️
+- **Costly** 💸
+- **Operationally opaque** 🕳️
 
 Traditional APM tools fail to answer:
 
-Which internal step is slow?
+- Which internal step is slow?
+- How many tokens are used per request?
+- What is the real cost per interaction?
+- Are errors increasing over time?
 
-How many tokens are used per request?
+👉 **LLM-APM solves this by introducing LLM-native observability.**
 
-What is the real cost per interaction?
+---
 
-Are errors increasing over time?
+## ✨ Key Capabilities
 
-👉 LLM-APM solves this by introducing LLM-native observability.
+### 🧠 LLM Application (FastAPI)
 
-✨ Key Capabilities
-🧠 LLM Application (FastAPI)
+- Chatbot-based request handling
+- Central request lifecycle tracking
+- Middleware-driven latency measurement
+- Internal LLM configuration (no user-supplied `max_tokens`)
+- `/metrics` endpoint for Prometheus
 
-Chatbot-based request handling
-
-Central request lifecycle tracking
-
-Middleware-driven latency measurement
-
-Internal LLM configuration (no user-supplied max_tokens)
-
-/metrics endpoint for Prometheus
-
-🧩 llm_apm Python Library
+### 🧩 `llm_apm` Python Library
 
 Reusable, installable APM library providing:
 
-Request context propagation
+- Request context propagation
+- Step-wise elapsed time tracking
+- Token usage aggregation
+- Cost estimation
+- Error classification
+- Prometheus metric exporters
+- Decorators for step instrumentation
 
-Step-wise elapsed time tracking
-
-Token usage aggregation
-
-Cost estimation
-
-Error classification
-
-Prometheus metric exporters
-
-Decorators for step instrumentation
-
+```python
 @step("llm_api_call")
 def call_llm(...):
     ...
+```
 
-💬 Frontend Chatbot (React + Vite)
+### 💬 Frontend Chatbot (React + Vite)
 
-ChatGPT-style conversational UI
+- ChatGPT-style conversational UI
+- Sends user messages to backend
+- No manual configuration from user
+- Automatically generates metrics
 
-Sends user messages to backend
-
-No manual configuration from user
-
-Automatically generates metrics
-
-📊 Frontend Dashboard
+### 📊 Frontend Dashboard
 
 Custom-built UI showing:
 
-Total requests
+- Total requests
+- Average latency
+- Error rate
+- Total token usage
+- Per-request history
+- Expandable request-level details
 
-Average latency
+**Note:** This dashboard is not Grafana — it is a custom frontend, which is a major strength of this project.
 
-Error rate
+### 📈 Observability Stack
 
-Total token usage
-
-Per-request history
-
-Expandable request-level details
-
-This dashboard is not Grafana — it is a custom frontend, which is a major strength of this project.
-
-📈 Observability Stack
-
-Prometheus → Metrics collection
-
-Grafana → Time-series visualization & alerts
+- **Prometheus** → Metrics collection
+- **Grafana** → Time-series visualization & alerts
 
 Supports:
 
-1m / 5m / 1h / 24h latency trends
+- 1m / 5m / 1h / 24h latency trends
+- Error rate monitoring
+- Token & cost trends
 
-Error rate monitoring
+---
 
-Token & cost trends
+## 🏗️ Architecture
 
-🏗️ Architecture
+```
 User (Browser)
    ↓
 React Frontend
@@ -136,30 +120,28 @@ FastAPI Backend
 Prometheus
    ↓
 Grafana
+```
 
-⚙️ Request Lifecycle (Step-wise Tracking)
+---
 
-User sends a chat message
+## ⚙️ Request Lifecycle (Step-wise Tracking)
 
-Middleware starts overall timer
+1. User sends a chat message
+2. Middleware starts overall timer
+3. Steps executed:
+   - Preprocessing
+   - LLM API call
+   - Response parsing
+   - Metrics export
+4. Tokens & cost calculated
+5. Metrics exposed to Prometheus
+6. Dashboards update in real time
 
-Steps executed:
+---
 
-Preprocessing
+## 📂 Project Structure
 
-LLM API call
-
-Response parsing
-
-Metrics export
-
-Tokens & cost calculated
-
-Metrics exposed to Prometheus
-
-Dashboards update in real time
-
-📂 Project Structure (EXACT — FROM YOUR SCREENSHOT)
+```
 LLM-APM/
 ├── .vscode/
 │   └── settings.json
@@ -224,28 +206,40 @@ LLM-APM/
 ├── .env
 ├── .gitignore
 └── README.md
+```
 
-🐳 Containerization
+---
 
-Backend, frontend, Prometheus, and Grafana are containerized
+## 🐳 Containerization
 
-docker-compose.yml orchestrates the full stack
+- Backend, frontend, Prometheus, and Grafana are containerized
+- `docker-compose.yml` orchestrates the full stack
+- Easy local startup & reproducibility
 
-Easy local startup & reproducibility
+---
 
-📊 Metrics Exposed
+## 📊 Metrics Exposed
 
 Examples:
 
-llm_requests_total
+- `llm_requests_total`
+- `llm_request_latency_seconds`
+- `llm_step_latency_seconds`
+- `llm_tokens_total`
+- `llm_cost_usd_total`
+- `llm_errors_total`
 
-llm_request_latency_seconds
+---
 
-llm_step_latency_seconds
+## 🚀 Getting Started
 
-llm_tokens_total
+*(Add your installation and setup instructions here)*
 
-llm_cost_usd_total
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/LLM-APM.git
+cd LLM-APM
 
-llm_errors_total
-
+# Start the stack
+docker-compose up -d
+```
