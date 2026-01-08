@@ -1,0 +1,108 @@
+{
+  "title": "LLM APM Dashboard",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 2,
+  "refresh": "5s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "HTTP Request Rate (RPS)",
+      "targets": [
+        {
+          "expr": "sum(rate(llm_requests_total[1m]))",
+          "legendFormat": "requests/sec"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "HTTP Request Latency (p95)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(llm_request_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95 latency"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "HTTP Request Latency (p99)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(llm_request_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p99 latency"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "LLM Step Latency (p95 by step)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(llm_step_latency_seconds_bucket[5m])) by (step, le))",
+          "legendFormat": "{{step}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "LLM Errors (by step)",
+      "targets": [
+        {
+          "expr": "sum(rate(llm_errors_total[5m])) by (step)",
+          "legendFormat": "{{step}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Token Usage Rate (tokens/sec)",
+      "targets": [
+        {
+          "expr": "sum(rate(llm_tokens_total[1m])) by (type)",
+          "legendFormat": "{{type}}"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Token Usage per Model",
+      "targets": [
+        {
+          "expr": "sum(rate(llm_model_tokens_total[1m])) by (model, type)",
+          "legendFormat": "{{model}} - {{type}}"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "LLM Cost Burn Rate ($/sec)",
+      "targets": [
+        {
+          "expr": "rate(llm_request_cost_usd[1m])",
+          "legendFormat": "USD/sec"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Total Cost (USD)",
+      "targets": [
+        {
+          "expr": "sum(llm_request_cost_usd)",
+          "legendFormat": "total"
+        }
+      ]
+    }
+  ]
+}

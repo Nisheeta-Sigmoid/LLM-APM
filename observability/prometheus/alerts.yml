@@ -1,0 +1,26 @@
+groups:
+- name: llm-apm-slo
+  rules:
+  - alert: LLMHighErrorRate
+    expr: |
+      sum(rate(llm_errors_total[5m]))
+      /
+      sum(rate(llm_requests_total[5m]))
+      > 0.01
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "LLM error rate exceeded 1%"
+
+  - alert: LLMHighLatency
+    expr: |
+      histogram_quantile(
+        0.95,
+        sum(rate(llm_request_latency_seconds_bucket[5m])) by (le)
+      ) > 3
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "LLM p95 latency > 3s"

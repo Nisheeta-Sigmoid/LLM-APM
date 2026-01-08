@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+prometheus-client
+python-dotenv
+httpx
+pydantic
+groq
+pydantic-settings

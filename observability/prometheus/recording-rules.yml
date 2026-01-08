@@ -1,0 +1,44 @@
+groups:
+- name: llm_apm_slos
+  rules:
+
+  # ----------------------------
+  # Request rate
+  # ----------------------------
+  - record: llm:http_request:rate
+    expr: |
+      sum(rate(http_requests_total[5m]))
+
+  # ----------------------------
+  # Error rate
+  # ----------------------------
+  - record: llm:http_request:error_rate
+    expr: |
+      sum(rate(http_request_errors_total[5m]))
+      /
+      sum(rate(http_requests_total[5m]))
+
+  # ----------------------------
+  # Availability (SLO)
+  # ----------------------------
+  - record: llm:http_request:availability
+    expr: |
+      1 - llm:http_request:error_rate
+
+  # ----------------------------
+  # Latency SLO (p95)
+  # ----------------------------
+  - record: llm:http_request:latency_p95
+    expr: |
+      histogram_quantile(
+        0.95,
+        sum(rate(http_request_latency_seconds_bucket[5m])) by (le)
+      )
+
+  # ----------------------------
+  # Error Budget Remaining (30d)
+  # SLO = 99% → allowed errors = 1%
+  # ----------------------------
+  - record: llm:error_budget:remaining
+    expr: |
+      0.01 - llm:http_request:error_rate
