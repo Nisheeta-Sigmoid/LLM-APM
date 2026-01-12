@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-apm-frontend
+spec:
+  type: NodePort
+  selector:
+    app: llm-apm-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30897

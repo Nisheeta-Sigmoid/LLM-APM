@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-apm-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llm-apm-backend
+  template:
+    metadata:
+      labels:
+        app: llm-apm-backend
+    spec:
+      containers:
+        - name: backend
+          image: llm-apm-backend:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - secretRef:
+                name: llm-apm-secrets

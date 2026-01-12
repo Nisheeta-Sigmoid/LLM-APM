@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-apm-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llm-apm-frontend
+  template:
+    metadata:
+      labels:
+        app: llm-apm-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: llm-apm-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: VITE_API_URL
+              value: "http://llm-apm-backend:4000"
