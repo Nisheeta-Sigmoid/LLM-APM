@@ -20,3 +20,6 @@ dist/
 # Grafana & Prometheus runtime data
 grafana/data/
 prometheus/data/
+
+# Kubernetes secrets
+**/secret.yaml
