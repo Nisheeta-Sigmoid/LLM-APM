@@ -1,1 +1,323 @@
-git reset --hard origin/main
+# 🚀 LLM-APM
+
+**Real-Time Observability for LLM-Powered Applications**
+
+*Chatbot • Step-wise Latency • Token & Cost Tracking • Prometheus • Grafana • Kubernetes*
+
+---
+
+## 🧠 Overview
+
+**LLM-APM** is an end-to-end Application Performance Monitoring (APM) platform specifically designed for LLM applications.
+
+This project goes beyond a basic `/generate` API and implements:
+
+- 💬 A **ChatGPT-style chatbot**
+- 📊 A **custom frontend performance dashboard**
+- 🧩 A **plug-and-play Python APM library** (`llm_apm`)
+- 📈 **Prometheus + Grafana** observability stack
+- 🧠 **Step-wise latency tracking** via middleware & decorators
+- ☸️ **Cloud-native Kubernetes deployment**
+
+**The goal:** Make LLM systems observable, debuggable, scalable, and cost-aware.
+
+---
+
+## 🎯 Problem Statement
+
+LLM applications are:
+
+- **Latency-sensitive** ⏱️
+- **Costly** 💸
+- **Operationally opaque** 🕳️
+
+Traditional APM tools fail to answer:
+
+- Which internal step is slow?
+- How many tokens are used per request?
+- What is the real cost per interaction?
+- Are errors increasing over time?
+- How does performance change under load?
+
+👉 **LLM-APM solves this by introducing LLM-native observability.**
+
+---
+
+## ✨ Key Capabilities
+
+### 🧠 LLM Application (FastAPI)
+
+- Chatbot-based request handling
+- Central request lifecycle tracking
+- Middleware-driven latency measurement
+- Internal LLM configuration (no user-supplied `max_tokens`)
+- `/metrics` endpoint for Prometheus
+- Kubernetes-ready service exposure
+
+### 🧩 `llm_apm` Python Library
+
+Reusable, installable APM library providing:
+
+- Request context propagation
+- Step-wise elapsed time tracking
+- Token usage aggregation
+- Cost estimation
+- Error classification
+- Prometheus metric exporters
+- Decorators for step instrumentation
+
+```python
+@step("llm_api_call")
+def call_llm(...):
+    ...
+```
+
+### 💬 Frontend Chatbot (React + Vite)
+
+- ChatGPT-style conversational UI
+- Sends user messages to backend
+- No manual configuration from user
+- Automatically generates metrics
+- Fully stateless frontend
+- Kubernetes service-based backend access
+
+### 📊 Frontend Dashboard
+
+Custom-built UI showing:
+
+- Total requests
+- Average latency
+- Error rate
+- Total token usage
+- Per-request history
+- Expandable request-level details
+
+**Note:** This dashboard is not Grafana — it is a custom frontend, which is a major strength of this project.
+
+### 📈 Observability Stack
+
+- **Prometheus** → Metrics collection
+- **Grafana** → Time-series visualization & alerts
+
+Supports:
+
+- 1m / 5m / 1h / 24h latency trends
+- Error rate monitoring
+- Token & cost trends
+- Kubernetes-aware scraping
+
+---
+
+## 🏗️ Architecture
+
+```
+User (Browser)
+   ↓
+React Frontend (K8s Service)
+   ├── Chatbot
+   └── Dashboard
+   ↓
+FastAPI Backend (K8s Service)
+   ├── APM Middleware
+   ├── Step Decorators
+   ├── LLM Client
+   └── /metrics
+   ↓
+Prometheus (K8s)
+   ↓
+Grafana (K8s)
+```
+
+---
+
+## ⚙️ Request Lifecycle (Step-wise Tracking)
+
+1. User sends a chat message
+2. Middleware starts overall timer
+3. Steps executed:
+   - Preprocessing
+   - LLM API call
+   - Response parsing
+   - Metrics export
+4. Tokens & cost calculated
+5. Metrics exposed to Prometheus
+6. Dashboards update in real time
+
+---
+
+## 📂 Project Structure
+
+```
+LLM-APM/
+├── .vscode/
+│   └── settings.json
+│
+├── app/
+│   ├── __pycache__/
+│   ├── dependencies/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── main.py
+│   ├── requirements.txt
+│   └── state.py
+│
+├── docker/
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   └── Dockerfile_apm
+│
+├── frontend/
+│   ├── node_modules/
+│   ├── public/
+│   ├── src/
+│   ├── .env
+│   ├── .gitignore
+│   ├── Dockerfile
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── README.md
+│   ├── tailwind.config.js
+│   └── vite.config.js
+│
+├── k8s/
+│   ├── backend/
+│   │   ├── deployment.yaml
+│   │   └── service.yaml
+│   ├── frontend/
+│   │   ├── deployment.yaml
+│   │   └── service.yaml
+│   └── observability/
+│       ├── prometheus.yaml
+│       ├── grafana.yaml
+│       └── secrets.yaml
+│
+├── llm_apm/
+│   ├── __pycache__/
+│   ├── llm_apm.egg-info/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── context.py
+│   ├── cost.py
+│   ├── decorators.py
+│   ├── errors.py
+│   ├── metrics.py
+│   ├── middleware.py
+│   ├── README.md
+│   └── utils.py
+│
+├── observability/
+│   ├── grafana/
+│   │   └── dashboards/
+│   └── prometheus/
+│       ├── alert-rules.yml
+│       ├── alert.yml
+│       ├── prometheus.yml
+│       └── recording-rules.yml
+│
+├── .env
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 🐳 Docker Support (Local Development)
+
+The entire stack can be run locally using Docker Compose.
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/LLM-APM.git
+cd LLM-APM
+
+# Start the stack
+docker-compose up -d
+```
+
+**Includes:**
+- Backend
+- Frontend
+- Prometheus
+- Grafana
+
+---
+
+## ☸️ Kubernetes Deployment
+
+LLM-APM is **fully Kubernetes-native** and production-ready.
+
+### 🔹 Components Deployed
+
+- `llm-apm-backend` (FastAPI)
+- `llm-apm-frontend` (Nginx + React)
+- `prometheus`
+- `grafana`
+
+Each component runs as:
+- **Deployment**
+- **Service (ClusterIP / NodePort)**
+
+### 🚀 Deploy to Kubernetes (Minikube / Local Cluster)
+
+```bash
+# Build images
+docker build -f docker/Dockerfile -t llm-apm-backend:latest .
+docker build -t llm-apm-frontend:latest ./frontend
+
+# Load images into Minikube
+minikube image load llm-apm-backend:latest
+minikube image load llm-apm-frontend:latest
+
+# Apply manifests
+kubectl apply -f k8s/backend/
+kubectl apply -f k8s/frontend/
+kubectl apply -f k8s/observability/
+```
+
+### 🌐 Access Services
+
+```bash
+minikube service llm-apm-frontend
+minikube service grafana
+```
+
+---
+
+## 📊 Metrics Exposed
+
+Examples:
+
+- `llm_requests_total`
+- `llm_request_latency_seconds`
+- `llm_step_latency_seconds`
+- `llm_tokens_total`
+- `llm_cost_usd_total`
+- `llm_errors_total`
+
+---
+
+## 🎯 Why This Project Matters
+
+- LLM-specific APM (not generic tracing)
+- Step-level introspection
+- Cost visibility
+- Kubernetes-ready
+- Production-aligned architecture
+- Clean separation of concerns
+
+---
+
+## 🚀 Roadmap
+
+- Distributed tracing (OpenTelemetry)
+- Multi-LLM support
+- Autoscaling based on latency
+- Auth & rate limiting
+- Persistent request storage
